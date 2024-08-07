@@ -41,7 +41,7 @@ Docker-compose
     ```bash
    # API endpoint for getting videos with similar content according to 
    # the processed feature_vector data
-    curl http://0.0.0.0:8000/videos/v40357312/similart_vieos
+    curl http://0.0.0.0:8000/videos/v40357312/similar_videos
     
     # API endpoint for getting videos with similar context for the video 
     # with {video_id} id and {label} predicted label 
@@ -74,5 +74,5 @@ TBD, not done yet.
 
 ## Known Issues
 
-1. Pagination for API endpoints is not implemented
-2. TVShow analysis API endpoints are not finished
+1. Pagination for API endpoints is not implemented;
+2. TVShow analysis API endpoints are not finished.

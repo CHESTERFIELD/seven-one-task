@@ -8,7 +8,7 @@ from db import DBClient
 from schemas import VideoSchema, PredictedVideoSchema
 
 
-SIMILARITY_THRESHOLD = 0.8
+SIMILARITY_THRESHOLD = 0.9
 DATA_PATH = os.environ.get("DATA_FILEPATH")
 DATA_SHEET_NAME = os.environ.get("DATA_SHEET_NAME", "in")
 
