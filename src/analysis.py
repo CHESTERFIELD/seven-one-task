@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 from db import DBClient
-from schemas import VideoSchema, PredictedVideoSchema
+from schemas import VideoSchema, PredictedVideoSchema, TVShow, ContentInfo
 
 
 SIMILARITY_THRESHOLD = 0.9
@@ -20,20 +20,48 @@ def read_input_data(file_path: str, sheet_name: str):
     return pd.read_excel(file_path, sheet_name=sheet_name)
 
 
-def main():
+def analyse_and_insert_data():
     input_data = read_input_data(DATA_PATH, DATA_SHEET_NAME)
 
-    # TODO: add TVShow info analysis API
-    # grouped_data = input_data.groupby(['tvshow', 'actual_label']
-    #                                   ).size().reset_index(name='count')
-    # total_counts = grouped_data.groupby('tvshow')['count'].transform('sum')
-    # grouped_data['percentage'] = (grouped_data['count'] / total_counts) * 100
+    true_grouped_data = input_data.groupby([
+        'tvshow', 'actual_label']).size().reset_index(name='count')
+    total_counts = true_grouped_data.groupby('tvshow')[
+        'count'].transform('sum')
+    true_grouped_data['percentage'
+        ] = (true_grouped_data['count'] / total_counts) * 100
 
-    # grouped_data = input_data.groupby(
-    #     ['tvshow', 'actual_label', 'predicted_label']
-    # ).size().reset_index(name='count')
-    # total_counts = grouped_data.groupby('tvshow')['count'].transform('sum')
-    # grouped_data['percentage'] = (grouped_data['count'] / total_counts) * 100
+    grouped_data = input_data.groupby([
+        'tvshow', 'actual_label', 'predicted_label']).size(
+    ).reset_index(name='count')
+    total_counts = grouped_data.groupby('tvshow')['count'].transform('sum')
+    grouped_data['percentage'] = (grouped_data['count'] / total_counts) * 100
+
+    # transform data to the document schema
+    tvshows_actual_data = defaultdict(list)
+    for _, row in true_grouped_data.iterrows():
+        tvshows_actual_data[row.tvshow].append(ContentInfo(
+            label=row.actual_label,
+            percentage=round(float(row.percentage), 2)))
+
+    # transform data to the document schema
+    tvshows_predicted_data = defaultdict(list)
+    for _, row in grouped_data.iterrows():
+        tvshows_predicted_data[row.tvshow].append(ContentInfo(
+            label=row.predicted_label,
+            percentage=round(float(row.percentage), 2)))
+
+    tvshow_names = set()
+    tvshow_names.update(tvshows_actual_data.keys())
+    tvshow_names.update(tvshows_predicted_data.keys())
+
+    # insert documents into collection
+    db.tvshows_collection.insert_many([
+        TVShow(name=name,
+               actual_content_percentage=tvshows_actual_data[name],
+               predicted_content_percentage=tvshows_predicted_data[name]
+               ).to_dict()
+        for name in tvshow_names
+    ])
 
     # transform string vector to the float numpy array
     vectors = np.array([list(map(float, vector.split(', ')))
@@ -95,4 +123,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    analyse_and_insert_data()

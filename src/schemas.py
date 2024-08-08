@@ -20,11 +20,17 @@ class VideoSchema:
         return dataclasses.asdict(self)
 
 
-# @dataclasses.dataclass
-# class TVShow:
-#     name: str
-#     title: str
-#     actual_label: str
-#     predictable_label: str
-#     actual_topic: str
-#     predictable_topic: str
+@dataclasses.dataclass
+class ContentInfo:
+    label: str
+    percentage: float
+
+
+@dataclasses.dataclass
+class TVShow:
+    name: str
+    actual_content_percentage: List[ContentInfo]
+    predicted_content_percentage: List[ContentInfo]
+
+    def to_dict(self):
+        return dataclasses.asdict(self)

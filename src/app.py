@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from typing import List
 
 from db import DBClient
-from models import Video, PredictedLabelVideosRequest
+from models import Video, PredictedLabelVideosRequest, TVShow
 
 app = FastAPI()
 db = DBClient()
@@ -35,10 +35,9 @@ def get_similar_content_for_video_by_predicted_label(
     return result
 
 
-# @app.get("/tvshows/{show_id}/detail_info",
-#          response_model=Dict[str, float])
-# def get_tv_show_detailed_info_by_id(show_id: str):
-#     return {}
+@app.get("/tvshows", response_model=List[TVShow])
+def get_tv_show_detailed_info_by_id():
+    return list(db.tvshows_collection.find())
 
 
 if __name__ == "__main__":

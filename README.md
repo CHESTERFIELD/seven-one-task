@@ -8,7 +8,8 @@ for @7.1 Tech Hub company.
 ## Features
 
 - Analysis of video content data
-- API to retrieve processed data results
+- API to retrieve videos processed data results
+- API to retrieve tvshows analysed data results
 
 ## Requirements
 ```
@@ -48,6 +49,10 @@ Docker-compose
     curl -X POST http://0.0.0.0:8000/videos/predicted_label_similarity_videos \
       -H "Content-Type: application/json" \
       -d '{"video_id":"v40357312", "label":"FoodBev"}'
+   
+    # API endpoint for getting tvshows info about percentage of content playing
+    # according to the processed content's labels data
+    curl http://0.0.0.0:8000/tvshows
     ```
 
 ## Additional
@@ -74,5 +79,4 @@ TBD, not done yet.
 
 ## Known Issues
 
-1. Pagination for API endpoints is not implemented;
-2. TVShow analysis API endpoints are not finished.
+1. Pagination for API endpoints is not implemented.
